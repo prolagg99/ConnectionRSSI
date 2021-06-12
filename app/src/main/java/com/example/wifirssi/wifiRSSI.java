@@ -12,6 +12,7 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,8 @@ import java.util.List;
 
 public class wifiRSSI extends AppCompatActivity {
 
+    private int mInterval = 2000; // 5 seconds by default, can be changed later
+    private Handler mHandler;
     final private int REQUEST_CODE_ASK_PERMISSIONS = 13;
     IntentFilter intentFilter = new IntentFilter();
     WifiManager wifiManager;
@@ -35,8 +38,9 @@ public class wifiRSSI extends AppCompatActivity {
     private BroadcastReceiver networkChangeReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.e("app","Network connectivity change  ----------------------------- yes");
+            Log.e("app","Network connectivity change  ----------------------------- available network");
 
+            wifiManager.startScan();
             wifiList = wifiManager.getScanResults();
             textString = new String[wifiList.size()];
             int[] drawableIds = new int[wifiList.size()];
@@ -60,7 +64,6 @@ public class wifiRSSI extends AppCompatActivity {
                     // no signals
                 }
             }
-
             adapter = new CustomAdapter(wifiRSSI.this,  textString, drawableIds);
             listView.setAdapter(adapter);
         }
@@ -72,11 +75,11 @@ public class wifiRSSI extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wifi_rssi);
 
+        mHandler = new Handler();
+        startRepeatingTask();
 
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         registerReceiver(networkChangeReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-        wifiManager.startScan();
-
         listView = (ListView) findViewById(R.id.menuList);
     }
 
@@ -93,6 +96,34 @@ public class wifiRSSI extends AppCompatActivity {
         super.onPause();
         unregisterReceiver(networkChangeReceiver);
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopRepeatingTask();
+    }
+
+    void startRepeatingTask() {
+        mStatusChecker.run();
+    }
+
+    void stopRepeatingTask() {
+        mHandler.removeCallbacks(mStatusChecker);
+    }
+
+    Runnable mStatusChecker = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+                registerReceiver(networkChangeReceiver, intentFilter);
+            } finally {
+                // 100% guarantee that this always happens, even if
+                // your update method throws an exception
+                mHandler.postDelayed(mStatusChecker, mInterval);
+            }
+        }
+    };
 
     // class of adapter to display each element of listView with icon
     public class CustomAdapter extends BaseAdapter {
@@ -134,7 +165,6 @@ public class wifiRSSI extends AppCompatActivity {
             title = (TextView) row.findViewById(R.id.txtTitle);
             title.setText(Title[position]);
             i1.setImageResource(imge[position]);
-
             return (row);
         }
     }

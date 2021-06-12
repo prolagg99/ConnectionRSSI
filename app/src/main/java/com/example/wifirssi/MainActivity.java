@@ -32,12 +32,14 @@ public class MainActivity extends AppCompatActivity {
     final private int REQUEST_CODE_ASK_PERMISSIONS = 13;
     TextView tvWifiSignal, tvRouterMacAddress;
     ImageView ivWifiSignal;
-    Button  wifiRSSIActivity;
+    Button wifiRSSIActivity;
+
 
     private BroadcastReceiver networkChangeReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.e("app","Network connectivity change");
+            Log.e("app","Network connectivity change ----------------------------- conected wifi");
+
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
 
             // get SSID
@@ -65,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
         startRepeatingTask();
 
         wifiRSSIActivity = (Button) findViewById(R.id.wifiRSSIActivity);
-
         wifiRSSIActivity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,6 +91,15 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        tvWifiSignal = (TextView) findViewById(R.id.tvWifiSignal);
+        tvRouterMacAddress = (TextView) findViewById(R.id.tvRouterMacAddress);
+        ivWifiSignal = (ImageView) findViewById(R.id.ivWifiSignal);
+
+        wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        registerReceiver(networkChangeReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+        wifiManager.startScan();
+
     }
 
     @Override
@@ -151,5 +161,5 @@ public class MainActivity extends AppCompatActivity {
             ivSignalLevel.setImageResource(R.drawable.ic_signal_wifi_0_bar_black_24dp);
         }
     }
-
 }
+

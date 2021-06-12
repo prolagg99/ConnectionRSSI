@@ -39,9 +39,7 @@
                 android:layout_height="20dp"
                 android:layout_weight="0"
                 tools:srcCompat="@drawable/ic_signal_wifi_0_bar_black_24dp" />
-
         </LinearLayout>
-
 
         <TextView
             android:id="@+id/tvRouterMacAddress"
@@ -51,15 +49,6 @@
             android:text="@string/mac_address"
             android:textColor="#000000"
             android:textSize="16dp" />
-
-        <Button
-            android:id="@+id/btnCellID"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="get cell ID" />
-
-
-
 
         <TextView
             android:id="@+id/tvWifiList"
@@ -71,47 +60,11 @@
             android:textSize="16dp" />
 
 
-        <ListView
-            android:id="@+id/wifiList"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-        </ListView>
-
         <Button
             android:id="@+id/wifiRSSIActivity"
             android:layout_width="60dp"
             android:layout_height="42dp"
             android:text="wifii" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="15dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/yourSecondTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="" />
-
-                <ImageView
-                    android:id="@+id/imageView"
-                    android:layout_width="10dp"
-                    android:layout_height="10dp"
-                    android:layout_weight="0"
-                    tools:srcCompat="@tools:sample/avatars" />
-
-            </LinearLayout>
-
-        </LinearLayout>
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

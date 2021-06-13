@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     final private int REQUEST_CODE_ASK_PERMISSIONS = 13;
     TextView tvWifiSignal, tvRouterMacAddress;
     ImageView ivWifiSignal;
-    Button wifiRSSIActivity;
+    Button wifiRSSIActivity, gsmRSSIActivity;
 
 
     private BroadcastReceiver networkChangeReceiver = new BroadcastReceiver() {
@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
                             REQUEST_CODE_ASK_PERMISSIONS);
                 }
 
-                Intent intent = new Intent(MainActivity.this, wifiRSSI.class);
+                Intent intent = new Intent(MainActivity.this, availableNetworkActivity.class);
                 if (ActivityCompat.checkSelfPermission(MainActivity.this,
                     Manifest.permission.ACCESS_FINE_LOCATION) !=
                     PackageManager.PERMISSION_GRANTED
@@ -99,6 +99,16 @@ public class MainActivity extends AppCompatActivity {
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         registerReceiver(networkChangeReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
         wifiManager.startScan();
+
+
+        gsmRSSIActivity = (Button) findViewById(R.id.gsmRSSIActivity);
+        gsmRSSIActivity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, CellularActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
 

@@ -23,7 +23,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import java.util.List;
 
-public class wifiRSSI extends AppCompatActivity {
+public class availableNetworkActivity extends AppCompatActivity {
 
     private int mInterval = 2000; // 5 seconds by default, can be changed later
     private Handler mHandler;
@@ -46,7 +46,7 @@ public class wifiRSSI extends AppCompatActivity {
             int[] drawableIds = new int[wifiList.size()];
 
             for(int i = 0; i < wifiList.size(); i++) {
-                textString[i] = wifiList.get(i).SSID;
+                textString[i] = wifiList.get(i).SSID + " " + wifiList.get(i).BSSID;
                 if (wifiList.get(i).level <= 0 && wifiList.get(i).level >= -50) {
                     drawableIds[i] = R.drawable.ic_signal_wifi_4_bar_black_24dp;
                     //Best signal
@@ -64,7 +64,7 @@ public class wifiRSSI extends AppCompatActivity {
                     // no signals
                 }
             }
-            adapter = new CustomAdapter(wifiRSSI.this,  textString, drawableIds);
+            adapter = new CustomAdapter(availableNetworkActivity.this,  textString, drawableIds);
             listView.setAdapter(adapter);
         }
     };
@@ -73,7 +73,7 @@ public class wifiRSSI extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_wifi_rssi);
+        setContentView(R.layout.activity_available_network);
 
         mHandler = new Handler();
         startRepeatingTask();

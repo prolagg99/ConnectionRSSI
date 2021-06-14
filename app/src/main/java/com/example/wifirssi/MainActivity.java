@@ -54,7 +54,24 @@ public class MainActivity extends AppCompatActivity {
             // get RSSI
             int numberOfLevels = 5;
             int level = WifiManager.compareSignalLevel(wifiInfo.getRssi(), numberOfLevels);
-            levelOfSignal(level, ivWifiSignal);
+//            levelOfSignal(level, ivWifiSignal);
+
+                if (wifiInfo.getRssi() <= 0 && wifiInfo.getRssi() >= -50) {
+                    ivWifiSignal.setImageResource(R.drawable.ic_signal_wifi_4_bar_black_24dp);
+                    //Best signal
+                } else if (wifiInfo.getRssi() < -50 && wifiInfo.getRssi() >= -70) {
+                    ivWifiSignal.setImageResource(R.drawable.ic_signal_wifi_3_bar_black_24dp);
+                    //Good signal
+                } else if (wifiInfo.getRssi() < -70 && wifiInfo.getRssi() >= -80) {
+                    ivWifiSignal.setImageResource(R.drawable.ic_signal_wifi_2_bar_black_24dp);
+                    //Low signal
+                } else if (wifiInfo.getRssi() < -80 && wifiInfo.getRssi() >= -100) {
+                    ivWifiSignal.setImageResource(R.drawable.ic_signal_wifi_1_bar_black_24dp);
+                    //Very weak signal
+                } else {
+                    ivWifiSignal.setImageResource(R.drawable.ic_signal_wifi_0_bar_black_24dp);
+                    // no signals
+                }
         }
     };
 
@@ -153,23 +170,23 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void levelOfSignal(int level, ImageView ivSignalLevel) {
-        if (level <= 0 && level >= -50) {
-            //Best signal
-            ivSignalLevel.setImageResource(R.drawable.ic_signal_wifi_4_bar_black_24dp);
-        } else if (level < -50 && level >= -70) {
-            //Good signal
-            ivSignalLevel.setImageResource(R.drawable.ic_signal_wifi_3_bar_black_24dp);
-        } else if (level < -70 && level >= -80) {
-            //Low signal
-            ivSignalLevel.setImageResource(R.drawable.ic_signal_wifi_2_bar_black_24dp);
-        } else if (level < -80 && level >= -100) {
-            //Very weak signal
-            ivSignalLevel.setImageResource(R.drawable.ic_signal_wifi_1_bar_black_24dp);
-        } else {
-            // no signals
-            ivSignalLevel.setImageResource(R.drawable.ic_signal_wifi_0_bar_black_24dp);
-        }
-    }
+//    private void levelOfSignal(int level, ImageView ivSignalLevel) {
+//        if (level <= 0 && level >= -50) {
+//            //Best signal
+//            ivSignalLevel.setImageResource(R.drawable.ic_signal_wifi_4_bar_black_24dp);
+//        } else if (level < -50 && level >= -70) {
+//            //Good signal
+//            ivSignalLevel.setImageResource(R.drawable.ic_signal_wifi_3_bar_black_24dp);
+//        } else if (level < -70 && level >= -80) {
+//            //Low signal
+//            ivSignalLevel.setImageResource(R.drawable.ic_signal_wifi_2_bar_black_24dp);
+//        } else if (level < -80 && level >= -100) {
+//            //Very weak signal
+//            ivSignalLevel.setImageResource(R.drawable.ic_signal_wifi_1_bar_black_24dp);
+//        } else {
+//            // no signals
+//            ivSignalLevel.setImageResource(R.drawable.ic_signal_wifi_0_bar_black_24dp);
+//        }
+//    }
 }
 

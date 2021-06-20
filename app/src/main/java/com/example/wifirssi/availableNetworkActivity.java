@@ -1,13 +1,13 @@
 package com.example.wifirssi;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.ConnectivityManager;
+import android.content.pm.PackageManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Build;
@@ -25,38 +25,36 @@ import java.util.List;
 
 public class availableNetworkActivity extends AppCompatActivity {
 
-    private int mInterval = 2000; // 5 seconds by default, can be changed later
-    private Handler mHandler;
-    final private int REQUEST_CODE_ASK_PERMISSIONS = 13;
-    IntentFilter intentFilter = new IntentFilter();
-    WifiManager wifiManager;
-    List<ScanResult> wifiList;
     ListView listView;
     String[] textString;
+    int[] drawableIds;
     CustomAdapter adapter;
+    WifiManager mWifiManager;
 
-    private BroadcastReceiver networkChangeReceiver = new BroadcastReceiver() {
+
+
+    private final BroadcastReceiver mWifiScanReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.e("app","Network connectivity change  ----------------------------- available network");
+        public void onReceive(Context c, Intent intent) {
+            if (intent.getAction().equals(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)) {
+                List<ScanResult> mScanResults = mWifiManager.getScanResults();
+                Log.e("", "value" + mScanResults + "\n\n");
+                textString = new String[ mScanResults.size()];
+                drawableIds = new int[ mScanResults.size()];
 
-            wifiManager.startScan();
-            wifiList = wifiManager.getScanResults();
-            textString = new String[wifiList.size()];
-            int[] drawableIds = new int[wifiList.size()];
-
-            for(int i = 0; i < wifiList.size(); i++) {
-                textString[i] = wifiList.get(i).SSID + " " + wifiList.get(i).BSSID;
-                if (wifiList.get(i).level <= 0 && wifiList.get(i).level >= -50) {
+                for(int i = 0; i < mScanResults.size(); i++) {
+                textString[i] = mScanResults.get(i).SSID + " " + mScanResults.get(i).BSSID;
+                Log.e("", "value -----------------------------------------------------------" + textString[i]);
+                if (mScanResults.get(i).level <= 0 && mScanResults.get(i).level >= -50) {
                     drawableIds[i] = R.drawable.ic_signal_wifi_4_bar_black_24dp;
                     //Best signal
-                } else if (wifiList.get(i).level < -50 && wifiList.get(i).level >= -70) {
+                } else if (mScanResults.get(i).level < -50 && mScanResults.get(i).level >= -70) {
                     drawableIds[i] = R.drawable.ic_signal_wifi_3_bar_black_24dp;
                     //Good signal
-                } else if (wifiList.get(i).level < -70 && wifiList.get(i).level >= -80) {
+                } else if (mScanResults.get(i).level < -70 && mScanResults.get(i).level >= -80) {
                     drawableIds[i] = R.drawable.ic_signal_wifi_2_bar_black_24dp;
                     //Low signal
-                } else if (wifiList.get(i).level < -80 && wifiList.get(i).level >= -100) {
+                } else if (mScanResults.get(i).level < -80 && mScanResults.get(i).level >= -100) {
                     drawableIds[i] = R.drawable.ic_signal_wifi_1_bar_black_24dp;
                     //Very weak signal
                 } else {
@@ -66,64 +64,56 @@ public class availableNetworkActivity extends AppCompatActivity {
             }
             adapter = new CustomAdapter(availableNetworkActivity.this,  textString, drawableIds);
             listView.setAdapter(adapter);
+            }
         }
     };
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_available_network);
 
-        mHandler = new Handler();
-        startRepeatingTask();
-
-        wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        registerReceiver(networkChangeReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
         listView = (ListView) findViewById(R.id.menuList);
+
+        mWifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        registerReceiver(mWifiScanReceiver,
+                new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+
+        startScan();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if(checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 87);
+            }
+        }
+    }
 
-        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(networkChangeReceiver, intentFilter);
+    public void startScan(){
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mWifiManager.startScan();
+                startScan();
+                Log.e("","value" + "after 2 seconds ---------");
+            }
+        }, 1*1000);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(networkChangeReceiver);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        stopRepeatingTask();
     }
 
-    void startRepeatingTask() {
-        mStatusChecker.run();
-    }
-
-    void stopRepeatingTask() {
-        mHandler.removeCallbacks(mStatusChecker);
-    }
-
-    Runnable mStatusChecker = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-                registerReceiver(networkChangeReceiver, intentFilter);
-            } finally {
-                // 100% guarantee that this always happens, even if
-                // your update method throws an exception
-                mHandler.postDelayed(mStatusChecker, mInterval);
-            }
-        }
-    };
 
     // class of adapter to display each element of listView with icon
     public class CustomAdapter extends BaseAdapter {

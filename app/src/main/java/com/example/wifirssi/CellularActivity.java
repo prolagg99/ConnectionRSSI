@@ -146,7 +146,7 @@ public class CellularActivity extends AppCompatActivity {
                         + "Tracking area code " + cellIdentityLte.getTac() + "\n"
                         + "RSSI " + strength + "\n";
                 tvCellID.setText(additional_info);
-                levelOfSignal(strength, ivGsmLevel);
+                levelOfSignalLTE(strength, ivGsmLevel);
             } else if (cellInfo instanceof CellInfoWcdma) {
                 CellInfoWcdma cellInfoWcdma = (CellInfoWcdma) cellInfo;
                 CellIdentityWcdma cellIdentityWcdma = cellInfoWcdma.getCellIdentity();
@@ -345,18 +345,37 @@ public class CellularActivity extends AppCompatActivity {
     };
 
     private void levelOfSignal(int level, ImageView ivSignalLevel) {
-        if (level <= 0 && level >= -50) {
+        if (level <= 0 && level >= -70) {
             //Best signal
             ivSignalLevel.setImageResource(R.drawable.ic_signal_wifi_4_bar_black_24dp);
-        } else if (level < -50 && level >= -70) {
+        } else if (level < -70 && level >= -80) {
             //Good signal
             ivSignalLevel.setImageResource(R.drawable.ic_signal_wifi_3_bar_black_24dp);
-        } else if (level < -70 && level >= -80) {
+        } else if (level < -80 && level >= -90) {
             //Low signal
             ivSignalLevel.setImageResource(R.drawable.ic_signal_wifi_2_bar_black_24dp);
-        } else if (level < -80 && level >= -100) {
+        } else if (level < -90 && level >= -100) {
             //Very weak signal
             ivSignalLevel.setImageResource(R.drawable.ic_signal_wifi_1_bar_black_24dp);
+        } else if (level < -100 ) {
+            //Very weak signal
+            ivSignalLevel.setImageResource(R.drawable.ic_signal_wifi_1_bar_black_24dp);
+        } else {
+            // no signals
+            ivSignalLevel.setImageResource(R.drawable.ic_signal_wifi_0_bar_black_24dp);
+        }
+    }
+
+    private void levelOfSignalLTE(int level, ImageView ivSignalLevel) {
+        if (level <= 0 && level >= -80) {
+            //Best signal
+            ivSignalLevel.setImageResource(R.drawable.ic_signal_wifi_4_bar_black_24dp);
+        } else if (level < -80 && level >= -90) {
+            //Good signal
+            ivSignalLevel.setImageResource(R.drawable.ic_signal_wifi_3_bar_black_24dp);
+        } else if (level < -90 && level >= -100) {
+            //Low signal
+            ivSignalLevel.setImageResource(R.drawable.ic_signal_wifi_2_bar_black_24dp);
         } else {
             // no signals
             ivSignalLevel.setImageResource(R.drawable.ic_signal_wifi_0_bar_black_24dp);

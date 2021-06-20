@@ -56,22 +56,22 @@ public class MainActivity extends AppCompatActivity {
             int level = WifiManager.compareSignalLevel(wifiInfo.getRssi(), numberOfLevels);
 //            levelOfSignal(level, ivWifiSignal);
 
-                if (wifiInfo.getRssi() <= 0 && wifiInfo.getRssi() >= -50) {
-                    ivWifiSignal.setImageResource(R.drawable.ic_signal_wifi_4_bar_black_24dp);
-                    //Best signal
-                } else if (wifiInfo.getRssi() < -50 && wifiInfo.getRssi() >= -70) {
-                    ivWifiSignal.setImageResource(R.drawable.ic_signal_wifi_3_bar_black_24dp);
-                    //Good signal
-                } else if (wifiInfo.getRssi() < -70 && wifiInfo.getRssi() >= -80) {
-                    ivWifiSignal.setImageResource(R.drawable.ic_signal_wifi_2_bar_black_24dp);
-                    //Low signal
-                } else if (wifiInfo.getRssi() < -80 && wifiInfo.getRssi() >= -100) {
-                    ivWifiSignal.setImageResource(R.drawable.ic_signal_wifi_1_bar_black_24dp);
-                    //Very weak signal
-                } else {
-                    ivWifiSignal.setImageResource(R.drawable.ic_signal_wifi_0_bar_black_24dp);
-                    // no signals
-                }
+            if (level <= 0 && level >= -50) {
+                //Best signal
+                 ivWifiSignal.setImageResource(R.drawable.ic_signal_wifi_4_bar_black_24dp);
+            } else if (level < -50 && level >= -70) {
+                //Good signal
+                 ivWifiSignal.setImageResource(R.drawable.ic_signal_wifi_3_bar_black_24dp);
+            } else if (level < -70 && level >= -80) {
+                //Low signal
+                 ivWifiSignal.setImageResource(R.drawable.ic_signal_wifi_2_bar_black_24dp);
+            } else if (level < -80 && level >= -100) {
+                //Very weak signal
+                 ivWifiSignal.setImageResource(R.drawable.ic_signal_wifi_1_bar_black_24dp);
+            } else {
+                // no signals
+                 ivWifiSignal.setImageResource(R.drawable.ic_signal_wifi_0_bar_black_24dp);
+            }
         }
     };
 
@@ -80,6 +80,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // request permission in run time
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                    },
+                    REQUEST_CODE_ASK_PERMISSIONS);
+        }
+
         mHandler = new Handler();
         startRepeatingTask();
 
@@ -87,25 +96,17 @@ public class MainActivity extends AppCompatActivity {
         wifiRSSIActivity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // request permission in run time
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    requestPermissions(new String[]{
-                                    Manifest.permission.ACCESS_FINE_LOCATION,
-                                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                            },
-                            REQUEST_CODE_ASK_PERMISSIONS);
-                }
-
                 Intent intent = new Intent(MainActivity.this, availableNetworkActivity.class);
                 if (ActivityCompat.checkSelfPermission(MainActivity.this,
-                    Manifest.permission.ACCESS_FINE_LOCATION) !=
-                    PackageManager.PERMISSION_GRANTED
-                    && ActivityCompat.checkSelfPermission(MainActivity.this,
-                    Manifest.permission.ACCESS_COARSE_LOCATION) !=
-                    PackageManager.PERMISSION_GRANTED){
-                    return;
+                        Manifest.permission.ACCESS_FINE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED){
+//                    return;
                 }
                 startActivity(intent);
+
             }
         });
 
@@ -116,7 +117,6 @@ public class MainActivity extends AppCompatActivity {
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         registerReceiver(networkChangeReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
         wifiManager.startScan();
-
 
         gsmRSSIActivity = (Button) findViewById(R.id.gsmRSSIActivity);
         gsmRSSIActivity.setOnClickListener(new View.OnClickListener() {
@@ -150,9 +150,10 @@ public class MainActivity extends AppCompatActivity {
 
     void startRepeatingTask() {
         mStatusChecker.run();
-    }
+}
 
     void stopRepeatingTask() {
+//        unregisterReceiver(networkChangeReceiver);
         mHandler.removeCallbacks(mStatusChecker);
     }
 
@@ -169,24 +170,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
-
-//    private void levelOfSignal(int level, ImageView ivSignalLevel) {
-//        if (level <= 0 && level >= -50) {
-//            //Best signal
-//            ivSignalLevel.setImageResource(R.drawable.ic_signal_wifi_4_bar_black_24dp);
-//        } else if (level < -50 && level >= -70) {
-//            //Good signal
-//            ivSignalLevel.setImageResource(R.drawable.ic_signal_wifi_3_bar_black_24dp);
-//        } else if (level < -70 && level >= -80) {
-//            //Low signal
-//            ivSignalLevel.setImageResource(R.drawable.ic_signal_wifi_2_bar_black_24dp);
-//        } else if (level < -80 && level >= -100) {
-//            //Very weak signal
-//            ivSignalLevel.setImageResource(R.drawable.ic_signal_wifi_1_bar_black_24dp);
-//        } else {
-//            // no signals
-//            ivSignalLevel.setImageResource(R.drawable.ic_signal_wifi_0_bar_black_24dp);
-//        }
-//    }
 }
 
